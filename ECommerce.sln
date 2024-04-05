@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Getway", "Getway", "{1AFD07E4-5B08-47BD-8745-A97922B9EC1E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration", "{30190CF8-9E2B-4D9E-9D1A-F394E1CDF764}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{BB16AD55-C1DE-4DDC-970A-15E42D208FDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Services.CouponAPI", "ECommerce.Services.CouponAPI\ECommerce.Services.CouponAPI.csproj", "{97E28871-7572-439D-AF19-ED47492B83D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Services.AuthAPI", "ECommerce.Services.AuthAPI\ECommerce.Services.AuthAPI.csproj", "{ECA848EE-9D24-4F82-BA55-706FFDC62095}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97E28871-7572-439D-AF19-ED47492B83D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97E28871-7572-439D-AF19-ED47492B83D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97E28871-7572-439D-AF19-ED47492B83D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97E28871-7572-439D-AF19-ED47492B83D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECA848EE-9D24-4F82-BA55-706FFDC62095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECA848EE-9D24-4F82-BA55-706FFDC62095}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECA848EE-9D24-4F82-BA55-706FFDC62095}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECA848EE-9D24-4F82-BA55-706FFDC62095}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{97E28871-7572-439D-AF19-ED47492B83D6} = {BB16AD55-C1DE-4DDC-970A-15E42D208FDD}
+		{ECA848EE-9D24-4F82-BA55-706FFDC62095} = {BB16AD55-C1DE-4DDC-970A-15E42D208FDD}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3A31A424-8CB7-4D34-A888-24EB7D1CD94E}
+	EndGlobalSection
+EndGlobal
