@@ -1,4 +1,4 @@
-﻿namespace ECommerce.Services.CouponAPI.DTOs.Coupon
+﻿namespace ECommerce.Services.ShoppingCartAPI.DTOs.Coupon
 {
     public class GetCouponDto
     {

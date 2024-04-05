@@ -1,4 +1,5 @@
 using ECommerce.Services.AuthAPI.Data;
+using ECommerce.Services.AuthAPI.Extensions;
 using ECommerce.Services.AuthAPI.Models;
 using ECommerce.Services.AuthAPI.Services.TokenGenerator;
 using ECommerce.Services.AuthAPI.Services.UserAccont;
@@ -28,23 +29,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddSignInManager()
     .AddRoles<IdentityRole>();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
-    };
-});
+builder.AddJwtAuthentication();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
