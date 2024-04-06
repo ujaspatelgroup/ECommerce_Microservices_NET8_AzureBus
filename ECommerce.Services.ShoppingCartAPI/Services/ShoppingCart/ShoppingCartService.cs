@@ -44,9 +44,9 @@ namespace ECommerce.Services.ShoppingCartAPI.Services.ShoppingCart
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse> DeleteShoppingCartAsync(CartDto cartDto)
+        public async Task<ServiceResponse> DeleteShoppingCartAsync(int CartDetailsId)
         {
-            bool result = await DeleteCart(cartDto.CartDetails.FirstOrDefault().CartDetailsId);
+            bool result = await DeleteCart(CartDetailsId);
             if (!result)
             {
                 _serviceResponse.Success = false;
