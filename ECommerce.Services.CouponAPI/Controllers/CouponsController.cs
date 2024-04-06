@@ -29,19 +29,19 @@ namespace ECommerce.Services.CouponAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ServiceResponse> AddStudent(AddCouponDto student)
+        public async Task<ServiceResponse> AddCoupon(AddCouponDto coupon)
         {
-            return await _couponService.AddCouponAsync(student);
+            return await _couponService.AddCouponAsync(coupon);
         }
 
         [HttpPut]
-        public async Task<ServiceResponse> UpdateStudent(UpdateCouponDto student)
+        public async Task<ServiceResponse> UpdateCoupon(UpdateCouponDto coupon)
         {
-            return await _couponService.UpdateCouponAsync(student);
+            return await _couponService.UpdateCouponAsync(coupon);
         }
 
         [HttpDelete]
-        public async Task<ServiceResponse> DeleteStudent(int id)
+        public async Task<ServiceResponse> DeleteCoupon(int id)
         {
             return await _couponService.DeleteCouponAsync(id);
         }

@@ -22,5 +22,11 @@ namespace ECommerce.Services.ShoppingCartAPI.Controllers
         {
             return await _shoppingCartService.AddShoppingCartAsync(cartDto);
         }
+
+        [HttpDelete]
+        public async Task<ServiceResponse> DeleteCart(int id)
+        {
+            return await _shoppingCartService.DeleteShoppingCartAsync(id);
+        }
     }
 }

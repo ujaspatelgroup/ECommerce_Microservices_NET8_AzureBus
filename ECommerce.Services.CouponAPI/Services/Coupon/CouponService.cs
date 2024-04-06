@@ -130,14 +130,12 @@ namespace ECommerce.Services.CouponAPI.Services.Coupon
 
         private async Task<GetCouponDto> findCoupon(int id)
         {
-            GetCouponDto? coupon = null;
-
             var query = "Select [CouponId], [CouponCode], [DiscountAmount], [MinAmount] From Coupons Where [CouponId] = @CouponId";
 
             var parameters = new DynamicParameters();
             parameters.Add("CouponId", id, DbType.Int64);
 
-            coupon = await _context.GetDataSingleAsync<GetCouponDto>(query, parameters);
+            var coupon = await _context.GetDataSingleAsync<GetCouponDto>(query, parameters);
             return coupon;
         }
     }
