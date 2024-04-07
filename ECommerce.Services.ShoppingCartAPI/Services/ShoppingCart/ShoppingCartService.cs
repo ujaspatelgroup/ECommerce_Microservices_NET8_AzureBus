@@ -149,7 +149,7 @@ namespace ECommerce.Services.ShoppingCartAPI.Services.ShoppingCart
             try
             {
                 _messageBus.SetConnetionString(_configuration.GetConnectionString("AzureBusConnection"));
-                await _messageBus.PublishMessage(cartDto, _configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCart"));
+                await _messageBus.PublishMessage(cartDto, _configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCartQueue"));
                 _serviceResponse.Message = "Topic/Queue Added";
                 return _serviceResponse;
             }
