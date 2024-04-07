@@ -1,8 +1,13 @@
-﻿using Dapper;
+﻿using AutoMapper;
+using Dapper;
 using ECommerce.Services.ShoppingCartAPI.Data;
 using ECommerce.Services.ShoppingCartAPI.DTOs.Cart;
+using ECommerce.Services.ShoppingCartAPI.DTOs.Product;
 using ECommerce.Services.ShoppingCartAPI.DTOs.Shared;
 using ECommerce.Services.ShoppingCartAPI.Models;
+using ECommerce.Services.ShoppingCartAPI.Services.Coupon;
+using ECommerce.Services.ShoppingCartAPI.Services.Product;
+using System.Collections.Generic;
 using System.Data;
 
 namespace ECommerce.Services.ShoppingCartAPI.Services.ShoppingCart
@@ -11,11 +16,58 @@ namespace ECommerce.Services.ShoppingCartAPI.Services.ShoppingCart
     {
         private readonly IApplicationContextDapper _context;
         private ServiceResponse _serviceResponse;
+        private readonly IMapper _mapper;
+        private readonly IProductService _productService;
+        private readonly ICouponService _couponService;
 
-        public ShoppingCartService(IApplicationContextDapper context)
+        public ShoppingCartService(IApplicationContextDapper context, IMapper mapper, IProductService productService, ICouponService couponService)
         {
             _context = context;
             _serviceResponse = new ServiceResponse();
+            _mapper = mapper;
+            _productService = productService;
+            _couponService = couponService;
+        }
+
+        public async Task<ServiceResponse> GetCartAsync(string UserId)
+        {
+            var cartHeader = await GetCartHeader(UserId);
+            if (cartHeader is not null)
+            {
+                var cartDetails = await GetCartDetails(cartHeader.CartHeaderId);
+
+                CartDto cart = new CartDto
+                {
+                    CartHeader = _mapper.Map<CartHeaderDto>(cartHeader),
+                    CartDetails = _mapper.Map<IEnumerable<CartDetailsDto>>(cartDetails)
+                };
+
+                IEnumerable<ProductDto> productDtos = await _productService.GetProducts();
+
+                foreach (var item in cart.CartDetails)
+                {
+                    item.Product = productDtos.FirstOrDefault(x => x.ProductId == item.ProductId);
+                    cart.CartHeader.CartTotal += (item.Count * item.Product.Price);
+                }
+
+                if (!string.IsNullOrEmpty(cart.CartHeader.CouponCode))
+                {
+                    var coupon = await _couponService.GetCouponAsync(cart.CartHeader.CouponCode);
+                    if (coupon is not null && cart.CartHeader.CartTotal > coupon.MinAmount)
+                    {
+                        cart.CartHeader.CartTotal -= coupon.DiscountAmount > 0 ? (double)coupon.DiscountAmount : 0;
+
+                        cart.CartHeader.Discount = coupon.DiscountAmount > 0 ? (double)coupon.DiscountAmount : 0;
+                    }
+                }
+
+                _serviceResponse.data = cart;
+            }
+            else
+            {
+                _serviceResponse.Message = "No product in Cart";
+            }
+            return _serviceResponse;
         }
 
         public async Task<ServiceResponse> AddShoppingCartAsync(CartDto cartDto)
@@ -36,7 +88,7 @@ namespace ECommerce.Services.ShoppingCartAPI.Services.ShoppingCart
                 }
                 else
                 {
-                    cartDetails.Count += cartDto.CartDetails.First().Count;
+                    cartDetails.Count += cartDto.CartDetails.FirstOrDefault().Count;
                     UpdateCartDetails(cartDetails.CartDetailsId, cartDetails.Count);
                 }
             }
@@ -54,6 +106,36 @@ namespace ECommerce.Services.ShoppingCartAPI.Services.ShoppingCart
                 return _serviceResponse;
             }
             _serviceResponse.Message = "Cart Deleted";
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse> ApplyCouponAsync(CartDto cartDto)
+        {
+            var cart = await UpdateCoupon(cartDto);
+            if (cart)
+            {
+                _serviceResponse.Message = "Coupon Updated";
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = "Something went wrong";
+            }
+            return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse> RemoveCouponAsync(string UserId)
+        {
+            var cart = await DeleteCoupon(UserId);
+            if (cart)
+            {
+                _serviceResponse.Message = "Coupon Deleted";
+            }
+            else
+            {
+                _serviceResponse.Success = false;
+                _serviceResponse.Message = "Something went wrong";
+            }
             return _serviceResponse;
         }
 
@@ -78,6 +160,16 @@ namespace ECommerce.Services.ShoppingCartAPI.Services.ShoppingCart
             parameters.Add("CartHeaderId", CartHeaderId, DbType.Int64);
             var cartDetail = await _context.GetDataSingleAsync<CartDetails>(query, parameters);
 
+            return cartDetail;
+        }
+
+        private async Task<IEnumerable<CartDetails>> GetCartDetails(int CartHeaderId)
+        {
+            var query = "Select [CartDetailsId], [CartHeaderId], [ProductId], [Count] From CartDetails Where [CartHeaderId] = @CartHeaderId";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("CartHeaderId", CartHeaderId, DbType.Int64);
+            var cartDetail = await _context.GetDataAsync<CartDetails>(query, parameters);
             return cartDetail;
         }
 
@@ -112,6 +204,29 @@ namespace ECommerce.Services.ShoppingCartAPI.Services.ShoppingCart
             parameters.Add("Count", Count, DbType.Int64);
 
             await _context.ExecuteSqlAsync<bool>(query, parameters);
+        }
+
+        private async Task<bool> UpdateCoupon(CartDto cartDto)
+        {
+            var query = "UPDATE CartHeader SET [CouponCode] = @CouponCode WHERE [UserId] = @UserId";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("CouponCode", cartDto.CartHeader.CouponCode, DbType.String);
+            parameters.Add("UserId", cartDto.CartHeader.UserId, DbType.String);
+
+            bool result = await _context.ExecuteSqlAsync<bool>(query, parameters);
+            return result;
+        }
+
+        private async Task<bool> DeleteCoupon(string UserId)
+        {
+            var query = "UPDATE CartHeader SET [CouponCode] = null WHERE [UserId] = @UserId";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("UserId", UserId, DbType.String);
+
+            bool result = await _context.ExecuteSqlAsync<bool>(query, parameters);
+            return result;
         }
 
         private async Task<bool> DeleteCart(int CartDetailsId)

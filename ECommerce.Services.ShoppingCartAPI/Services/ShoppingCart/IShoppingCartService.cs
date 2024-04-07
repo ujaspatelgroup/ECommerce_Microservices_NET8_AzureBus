@@ -5,6 +5,12 @@ namespace ECommerce.Services.ShoppingCartAPI.Services.ShoppingCart
 {
     public interface IShoppingCartService
     {
+        public Task<ServiceResponse> GetCartAsync(string UserId);
+
+        public Task<ServiceResponse> ApplyCouponAsync(CartDto cartDto);
+
+        public Task<ServiceResponse> RemoveCouponAsync(string UserId);
+
         public Task<ServiceResponse> AddShoppingCartAsync(CartDto cartDto);
 
         public Task<ServiceResponse> DeleteShoppingCartAsync(int CartDetailsId);

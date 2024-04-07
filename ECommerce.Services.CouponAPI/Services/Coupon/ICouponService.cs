@@ -7,7 +7,7 @@ namespace ECommerce.Services.CouponAPI.Services.Coupon
     {
         public Task<ServiceResponse> GetAllCouponsAsync();
 
-        public Task<ServiceResponse> GetCouponAsync(int id);
+        public Task<ServiceResponse> GetCouponAsync(string couponCode);
 
         public Task<ServiceResponse> AddCouponAsync(AddCouponDto coupon);
 
