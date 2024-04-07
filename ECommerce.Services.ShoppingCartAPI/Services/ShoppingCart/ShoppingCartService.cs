@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Dapper;
+using ECommerce.ServiceBus;
 using ECommerce.Services.ShoppingCartAPI.Data;
 using ECommerce.Services.ShoppingCartAPI.DTOs.Cart;
 using ECommerce.Services.ShoppingCartAPI.DTOs.Product;
@@ -19,14 +20,18 @@ namespace ECommerce.Services.ShoppingCartAPI.Services.ShoppingCart
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
         private readonly ICouponService _couponService;
+        private readonly IMessageBus _messageBus;
+        private readonly IConfiguration _configuration;
 
-        public ShoppingCartService(IApplicationContextDapper context, IMapper mapper, IProductService productService, ICouponService couponService)
+        public ShoppingCartService(IApplicationContextDapper context, IMapper mapper, IProductService productService, ICouponService couponService, IMessageBus messageBus, IConfiguration configuration)
         {
             _context = context;
             _serviceResponse = new ServiceResponse();
             _mapper = mapper;
             _productService = productService;
             _couponService = couponService;
+            _messageBus = messageBus;
+            _configuration = configuration;
         }
 
         public async Task<ServiceResponse> GetCartAsync(string UserId)
@@ -137,6 +142,23 @@ namespace ECommerce.Services.ShoppingCartAPI.Services.ShoppingCart
                 _serviceResponse.Message = "Something went wrong";
             }
             return _serviceResponse;
+        }
+
+        public async Task<ServiceResponse> EmailCartRequestAsync(CartDto cartDto)
+        {
+            try
+            {
+                _messageBus.SetConnetionString(_configuration.GetConnectionString("AzureBusConnection"));
+                await _messageBus.PublishMessage(cartDto, _configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCart"));
+                _serviceResponse.Message = "Topic/Queue Added";
+                return _serviceResponse;
+            }
+            catch (Exception ex)
+            {
+                _serviceResponse.Message = ex.Message;
+                _serviceResponse.Success = false;
+                return _serviceResponse;
+            }
         }
 
         private async Task<CartHeader> GetCartHeader(string UserId)

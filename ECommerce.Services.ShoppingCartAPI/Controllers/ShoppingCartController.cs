@@ -35,6 +35,12 @@ namespace ECommerce.Services.ShoppingCartAPI.Controllers
             return await _shoppingCartService.ApplyCouponAsync(cartDto);
         }
 
+        [HttpPost("EmailCartRequest")]
+        public async Task<ServiceResponse> EmailCartRequest(CartDto cartDto)
+        {
+            return await _shoppingCartService.EmailCartRequestAsync(cartDto);
+        }
+
         [HttpDelete("RemoveCoupon")]
         public async Task<ServiceResponse> RemoveCoupon(string UserId)
         {
