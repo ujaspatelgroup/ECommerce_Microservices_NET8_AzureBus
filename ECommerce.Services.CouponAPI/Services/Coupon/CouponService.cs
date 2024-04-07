@@ -25,9 +25,9 @@ namespace ECommerce.Services.CouponAPI.Services.Coupon
             return _serviceResponse;
         }
 
-        public async Task<ServiceResponse> GetCouponAsync(int id)
+        public async Task<ServiceResponse> GetCouponAsync(string couponCode)
         {
-            var findcoupon = await findCoupon(id);
+            var findcoupon = await findCouponCode(couponCode);
             if (findcoupon is not null)
             {
                 _serviceResponse.data = findcoupon;
@@ -46,7 +46,7 @@ namespace ECommerce.Services.CouponAPI.Services.Coupon
             var query = "INSERT INTO Coupons ([CouponCode], [DiscountAmount], [MinAmount]) VALUES (@CouponCode, @DiscountAmount, @MinAmount)";
 
             var parameters = new DynamicParameters();
-            parameters.Add("CouponCode", _coupon.CouponCode, DbType.String);
+            parameters.Add("CouponCode", _coupon.CouponCode.ToUpper(), DbType.String);
             parameters.Add("DiscountAmount", _coupon.DiscountAmount, DbType.Double);
             parameters.Add("MinAmount", _coupon.MinAmount, DbType.Int64);
             bool result = await _context.ExecuteSqlAsync<bool>(query, parameters);
@@ -79,7 +79,7 @@ namespace ECommerce.Services.CouponAPI.Services.Coupon
 
             var parameters = new DynamicParameters();
             parameters.Add("CouponId", _coupon.CouponId, DbType.Int64);
-            parameters.Add("CouponCode", _coupon.CouponCode, DbType.String);
+            parameters.Add("CouponCode", _coupon.CouponCode.ToUpper(), DbType.String);
             parameters.Add("DiscountAmount", _coupon.DiscountAmount, DbType.Double);
             parameters.Add("MinAmount", _coupon.MinAmount, DbType.Int64);
 
@@ -134,6 +134,17 @@ namespace ECommerce.Services.CouponAPI.Services.Coupon
 
             var parameters = new DynamicParameters();
             parameters.Add("CouponId", id, DbType.Int64);
+
+            var coupon = await _context.GetDataSingleAsync<GetCouponDto>(query, parameters);
+            return coupon;
+        }
+
+        private async Task<GetCouponDto> findCouponCode(string couponCode)
+        {
+            var query = "Select [CouponId], [CouponCode], [DiscountAmount], [MinAmount] From Coupons Where [couponCode] = @couponCode";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("couponCode", couponCode.ToUpper(), DbType.String);
 
             var coupon = await _context.GetDataSingleAsync<GetCouponDto>(query, parameters);
             return coupon;

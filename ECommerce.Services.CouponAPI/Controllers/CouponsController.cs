@@ -22,10 +22,10 @@ namespace ECommerce.Services.CouponAPI.Controllers
             return await _couponService.GetAllCouponsAsync();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ServiceResponse> Get(int id)
+        [HttpGet("{couponCode}")]
+        public async Task<ServiceResponse> Get(string couponCode)
         {
-            return await _couponService.GetCouponAsync(id);
+            return await _couponService.GetCouponAsync(couponCode);
         }
 
         [HttpPost]
