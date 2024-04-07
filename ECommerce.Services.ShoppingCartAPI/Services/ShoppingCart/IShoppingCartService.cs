@@ -14,5 +14,7 @@ namespace ECommerce.Services.ShoppingCartAPI.Services.ShoppingCart
         public Task<ServiceResponse> AddShoppingCartAsync(CartDto cartDto);
 
         public Task<ServiceResponse> DeleteShoppingCartAsync(int CartDetailsId);
+
+        public Task<ServiceResponse> EmailCartRequestAsync(CartDto cartDto);
     }
 }

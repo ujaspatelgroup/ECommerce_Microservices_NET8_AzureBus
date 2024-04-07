@@ -1,4 +1,5 @@
 using AutoMapper;
+using ECommerce.ServiceBus;
 using ECommerce.Services.ShoppingCartAPI;
 using ECommerce.Services.ShoppingCartAPI.Data;
 using ECommerce.Services.ShoppingCartAPI.Extensions;
@@ -25,6 +26,7 @@ builder.Services.AddTransient<IApplicationContextDapper, ApplicationContextDappe
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
+builder.Services.AddScoped<IMessageBus, MessageBus>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
